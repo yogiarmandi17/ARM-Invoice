@@ -1,0 +1,467 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(145deg, #eef2f7 0%, #dce5f0 100%);
+    font-family:
+        'Inter',
+        system-ui,
+        -apple-system,
+        'Segoe UI',
+        Roboto,
+        sans-serif;
+    padding: 2rem 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.app-container {
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+}
+
+/* Form Panel */
+.form-panel {
+    flex: 1.2;
+    min-width: 320px;
+    background: white;
+    border-radius: 32px;
+    box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.25);
+    padding: 1.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* Preview Panel */
+.invoice-panel {
+    flex: 1.4;
+    min-width: 440px;
+    background: transparent;
+}
+
+.invoice-card {
+    background: white;
+    border-radius: 32px;
+    box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.2);
+    padding: 1.5rem 1.8rem 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+h2 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+    color: #1f2a44;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-left: 5px solid #3b82f6;
+    padding-left: 1rem;
+}
+
+h2 i {
+    color: #3b82f6;
+    font-size: 1.5rem;
+}
+
+h3 {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #1e293b;
+    margin-bottom: 1rem;
+}
+
+.form-group {
+    margin-bottom: 1.2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+label {
+    font-weight: 500;
+    color: #334155;
+    margin-bottom: 0.3rem;
+    font-size: 0.85rem;
+    letter-spacing: 0.3px;
+}
+
+input,
+textarea {
+    padding: 0.7rem 1rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    transition: 0.2s;
+    background-color: #fefefe;
+    font-family: inherit;
+}
+
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 70px;
+}
+
+.items-section {
+    margin: 1rem 0 1.2rem;
+    background: #f8fafc;
+    border-radius: 24px;
+    padding: 1rem;
+}
+
+.item-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 12px;
+    align-items: center;
+    background: white;
+    padding: 10px 12px;
+    border-radius: 28px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.item-name {
+    flex: 2;
+    min-width: 120px;
+}
+.item-qty {
+    flex: 1;
+    min-width: 80px;
+}
+.item-price {
+    flex: 1;
+    min-width: 100px;
+}
+.item-total-display {
+    flex: 1;
+    font-weight: 600;
+    color: #0f172a;
+    background: #f1f5f9;
+    padding: 0.5rem 0.7rem;
+    border-radius: 28px;
+    text-align: center;
+    font-size: 0.85rem;
+}
+.remove-item {
+    background: #fee2e2;
+    border: none;
+    color: #b91c1c;
+    cursor: pointer;
+    width: 34px;
+    height: 34px;
+    border-radius: 40px;
+    font-size: 1rem;
+    transition: 0.2s;
+}
+.remove-item:hover {
+    background: #fecaca;
+    transform: scale(1.02);
+}
+
+.add-item-btn {
+    background: #eef2ff;
+    border: 1px dashed #3b82f6;
+    padding: 10px 16px;
+    border-radius: 40px;
+    font-weight: 500;
+    color: #2563eb;
+    cursor: pointer;
+    transition: 0.2s;
+    width: fit-content;
+    font-size: 0.85rem;
+    margin-top: 6px;
+}
+.add-item-btn i {
+    margin-right: 6px;
+}
+.add-item-btn:hover {
+    background: #e0e7ff;
+}
+
+.btn-convert {
+    background: linear-gradient(95deg, #1e3a8a, #3b82f6);
+    border: none;
+    width: 100%;
+    padding: 14px 0;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 1rem;
+    color: white;
+    cursor: pointer;
+    margin-top: 1.2rem;
+    transition: 0.2s;
+    box-shadow: 0 10px 15px -6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+.btn-convert:hover {
+    background: linear-gradient(95deg, #0f2b6d, #2563eb);
+    transform: translateY(-2px);
+}
+.btn-convert:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Style untuk Invoice Preview (SAMA PERSIS dengan yang akan di PDF) */
+.invoice-preview-wrapper {
+    background: white;
+    border-radius: 20px;
+    overflow-x: auto;
+}
+
+.invoice-content {
+    background: white;
+    font-family: 'Inter', system-ui, 'Segoe UI', sans-serif;
+    color: #1e293b;
+    padding: 20px;
+    width: 100%;
+}
+
+.invoice-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 2px solid #eef2ff;
+    padding-bottom: 1.2rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+}
+.invoice-title h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #0f172a;
+    margin-bottom: 6px;
+}
+.invoice-title p {
+    color: #475569;
+    font-size: 0.85rem;
+}
+.invoice-meta {
+    text-align: right;
+}
+.invoice-meta p {
+    font-size: 0.85rem;
+    margin: 4px 0;
+}
+.badge-invoice {
+    font-weight: 600;
+    background: #eef2ff;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    display: inline-block;
+}
+.info-grid {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.5rem;
+    background: #f9fafb;
+    padding: 0.4rem 0.6rem;
+    border-radius: 4px;
+    gap: 0.25rem;
+}
+.customer-info p,
+.invoice-detail p {
+    margin: 6px 0;
+    font-size: 0.85rem;
+}
+.label {
+    font-weight: 600;
+    color: #334155;
+}
+
+.invoice-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.75rem 0; /* diperkecil dari 1.5rem */
+    font-size: 0.7rem; /* diperkecil dari 0.85rem */
+}
+.invoice-table th {
+    text-align: left;
+    background: #f1f5f9;
+    padding: 6px 6px; /* diperkecil dari 12px 8px */
+    font-weight: 600;
+    border-bottom: 1px solid #e2e8f0;
+}
+.invoice-table td {
+    padding: 6px 6px; /* diperkecil dari 12px 8px */
+    border-bottom: 1px solid #eef2ff;
+}
+.invoice-table td:last-child,
+.invoice-table th:last-child {
+    text-align: right;
+}
+.invoice-table td:nth-child(2),
+.invoice-table th:nth-child(2) {
+    text-align: center;
+}
+
+.total-row {
+    font-weight: 700;
+    border-top: 1px solid #cbd5e1; /* diperkecil dari 2px */
+}
+.total-row td {
+    padding-top: 5px; /* diperkecil dari 14px */
+    font-size: 0.75rem; /* diperkecil dari 1rem */
+}
+.note-footer {
+    margin-top: 0.5rem;
+    background: #87ceeb;
+    padding: 0.8rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: #4b5563;
+}
+hr {
+    margin: 1rem 0;
+    border: none;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* Memperkecil ukuran font di seluruh note-footer */
+.note-footer {
+    font-size: 0.5rem; /* Ukuran default lebih kecil */
+}
+
+/* Khusus untuk area Quality Control */
+.note-footer .fa-clipboard-list + span {
+    font-size: 0.75rem;
+}
+
+.note-footer label span {
+    font-size: 0.7rem;
+}
+
+/* Khusus untuk Terms and Conditions */
+.note-footer .fa-pen + span {
+    font-size: 0.75rem;
+}
+
+.note-footer ul li {
+    font-size: 0.7rem;
+}
+
+/* Opsional: perkecil juga checkbox */
+.note-footer input[type='checkbox'] {
+    width: 14px;
+    height: 14px;
+    margin-right: 4px;
+}
+
+/* Atur jarak antar label agar tetap rapi */
+.note-footer div[style*='display: flex'] label {
+    gap: 4px;
+}
+
+.footer-thanks {
+    text-align: center;
+    font-size: 0.5rem;
+    color: #6c757d;
+    margin-top: 1rem;
+}
+
+.social-icons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.social-item {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.social-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    text-decoration: none;
+}
+
+.bank-icon.bca {
+    font-weight: bold;
+    font-size: 0.7rem;
+    color: #0055a4;
+    padding: 2px 2px;
+    border-radius: 4px;
+    font-family: Arial, sans-serif;
+    font-style: italic;
+    margin-top: 2px;
+}
+
+/* Warna Icon WhatsApp */
+.social-icon.whatsapp {
+    color: #25d366;
+}
+
+/* Warna Icon Instagram */
+.social-icon.instagram {
+    color: #e4405f;
+}
+
+/* Warna Icon TikTok */
+.social-icon.tiktok {
+    color: #000000;
+}
+
+.social-text {
+    font-size: 0.7rem;
+    color: #6c757d;
+}
+
+.thanks-text {
+    margin-top: 0.5rem;
+}
+
+@media (max-width: 780px) {
+    body {
+        padding: 1rem;
+    }
+    .form-panel,
+    .invoice-card {
+        padding: 1.2rem;
+    }
+    .item-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .remove-item {
+        align-self: flex-end;
+    }
+}

@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="id">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+        <link rel="icon" href="images.png" />
+        <title>Form Invoice ARM Store</title>
+        <!-- html2canvas dan jspdf -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <!-- Font Awesome 6 -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <div class="app-container">
+            <!-- Form Panel -->
+            <div class="form-panel">
+                <h2><i class="fas fa-file-invoice"></i> Data Invoice</h2>
+                <div class="form-group">
+                    <label>No. Invoice</label>
+                    <input type="text" id="invoiceNumber" placeholder="Masukan No Invoice Contoh : INV-1-ARM-1-2026" value="INV-1-ARM-1-2026" />
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nama Customer</label>
+                        <input type="text" id="customerName" placeholder="Masukan Nama pelanggan" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label>Tanggal Invoice</label>
+                        <input type="date" id="invoiceDate" value="" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Catatan / Note</label>
+                    <textarea id="invoiceNote" placeholder="Masukan Service atau Pembelian"></textarea>
+                </div>
+
+                <div class="items-section">
+                    <h3><i class="fas fa-list-ul"></i> Daftar Item / Jasa</h3>
+                    <div id="itemsContainer"></div>
+                    <button type="button" class="add-item-btn" id="addItemBtn"><i class="fas fa-plus-circle"></i> Tambah Baris Item</button>
+                </div>
+                <button class="btn-convert" id="convertToPDFBtn"><i class="fas fa-download"></i> Simpan sebagai PDF</button>
+                <p style="font-size: 0.7rem; margin-top: 12px; text-align: center; color: #4b5563"><i class="fas fa-print"></i> Preview di samping, klik tombol untuk download PDF (hasil sama persis)</p>
+            </div>
+
+            <!-- Preview Panel Invoice -->
+            <div class="invoice-panel">
+                <div class="invoice-card">
+                    <h2><i class="fas fa-receipt"></i> Pratinjau Invoice</h2>
+                    <div id="invoicePreviewContainer" class="invoice-preview-wrapper">
+                        <div id="invoiceForPDF" class="invoice-content">
+                            <!-- Konten invoice akan diisi oleh JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Data items array
+            let itemsArray = [];
+
+            // LOGO BASE64 - Ganti dengan base64 dari images.png Anda
+            // Cara mendapatkan base64: https://www.base64-image.de/ atau tools konverter online
+            // Upload images.png Anda, copy hasilnya dan ganti yang di bawah ini
+            //             const logoBase64 = `<?xml version="1.0" encoding="utf-8"?>
+            // <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            //   <rect width="100" height="100" rx="15" fill="#3b82f6"/>
+            //   <text x="50" y="55" font-size="20" text-anchor="middle" fill="white" font-weight="bold" font-family="Arial">ARM</text>
+            //   <text x="50" y="75" font-size="10" text-anchor="middle" fill="#dbeafe" font-family="Arial">STORE</text>
+            // </svg>`;
+            const logoBase64 =
+                'data:image/jpeg;base64,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';
+
+            // Fungsi untuk mengkonversi SVG ke data URL
+            function getLogoDataURL() {
+                if (logoBase64.startsWith('<?xml') || logoBase64.startsWith('<svg')) {
+                    return 'data:image/svg+xml;utf8,' + encodeURIComponent(logoBase64);
+                }
+                return logoBase64;
+            }
+
+            const itemsContainer = document.getElementById('itemsContainer');
+            const addItemBtn = document.getElementById('addItemBtn');
+
+            // Helper format Rupiah
+            function formatRupiah(amount) {
+                if (isNaN(amount) || amount === undefined || amount === null) amount = 0;
+                return 'Rp ' + Math.round(amount).toLocaleString('id-ID');
+            }
+
+            // Hitung total keseluruhan
+            function computeGrandTotal() {
+                return itemsArray.reduce((sum, item) => sum + (item.total || 0), 0);
+            }
+
+            // Escape HTML
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str.replace(/[&<>]/g, function (m) {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    return m;
+                });
+            }
+
+            // Format tanggal Indonesia
+            function formatDate(dateString) {
+                if (!dateString) return 'Belum diisi';
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return 'Tanggal tidak valid';
+                return date.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+            }
+
+            // Fungsi untuk merender invoice
+            function renderInvoiceToPreview() {
+                const invoiceDiv = document.getElementById('invoiceForPDF');
+                if (!invoiceDiv) return;
+
+                // Ambil data dari form
+                const invNumber = document.getElementById('invoiceNumber').value || '-';
+                const custName = document.getElementById('customerName').value || '-';
+                const invDateRaw = document.getElementById('invoiceDate').value;
+                const formattedDate = formatDate(invDateRaw);
+                const noteText = document.getElementById('invoiceNote').value || '-';
+                const grandTotal = computeGrandTotal();
+
+                // Generate baris tabel items
+                let tableRows = '';
+                if (itemsArray.length === 0) {
+                    tableRows = '<tr><td colspan="4" style="text-align:center; padding:30px;">Tidak ada item</td></tr>';
+                } else {
+                    itemsArray.forEach((item) => {
+                        const itemName = item.name && item.name.trim() !== '' ? item.name : '-';
+                        const qty = item.quantity || 0;
+                        const price = item.price || 0;
+                        const total = item.total || 0;
+                        tableRows += `
+                                    <tr>
+                                        <td style="padding: 10px 8px;">${escapeHtml(itemName)}</td>
+                                        <td style="text-align: center; padding: 10px 8px;">${qty}</td>
+                                        <td style="text-align: right; padding: 10px 8px;">${formatRupiah(price)}</td>
+                                        <td style="text-align: right; padding: 10px 8px; font-weight:500;">${formatRupiah(total)}</td>
+                                    </tr>
+                                `;
+                    });
+                }
+
+                // HTML invoice lengkap dengan logo
+                const invoiceHTML = `
+                            <div style="background: white; font-family: 'Inter', system-ui, 'Segoe UI', sans-serif; color: #1e293b; padding: 0;">
+
+                                <!-- Header dengan Logo dan Jakarta -->
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #3b82f6;">
+                                    <div style="flex: 1;">
+                                        <img src="${getLogoDataURL()}" alt="Logo" style="max-height: 60px; width: auto; object-fit: contain;">
+                                    </div>
+                                    <div style="flex: 1; text-align: right;">
+                                        <p style="font-size: 15px; font-weight: 700; color: #1e293b; margin: 0;">ARM STORE</p>
+                                        <p style="font-size: 10px; color: #6c757d; margin: 5px 0 0 0;">Kpl Jaya Mekar, Jalan Bbs No.05, RT.1/RW.8, Desa Cipatik, Cihampelas. Kab.Bandung Barat, Jawa Barat ID 40562</p>
+                                    </div>
+                                </div>
+
+                                <div class="invoice-header">
+                                    <div class="invoice-title">
+                                        <h3>INVOICE</h3>
+                                        <p># ${escapeHtml(invNumber)}</p>
+                                    </div>
+                                    <div class="invoice-meta">
+                                        <p><span class="badge-invoice"><i class="far fa-calendar-alt"></i> ${formattedDate}</span></p>
+                                    </div>
+                                </div>
+
+                                <div class="info-grid">
+                                    <div class="customer-info">
+                                        <p><span class="label">Customer:</span> ${escapeHtml(custName)}</p>
+                                    </div>
+                                    <div class="customer-info">
+                                        <p><span class="label">Note:</span> ${escapeHtml(noteText)}</p>
+                                    </div>
+                                </div>
+
+                                <table class="invoice-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Item</th>
+                                            <th style="text-align:center;">Qty</th>
+                                            <th style="text-align:right; width: 100px;">Harga</th>
+                                            <th style="text-align:right;">Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${tableRows}
+                                        <tr class="total-row">
+                                            <td colspan="3" style="text-align:right; font-weight:700;">TOTAL</td>
+                                            <td style="text-align:right; font-weight:700; width: 120px; font-size:0.75rem;">${formatRupiah(grandTotal)}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                               <!-- Quality Control -->
+                                <div class="note-footer" style="margin-top: 16px; font-size: 0.5rem;">
+                                    <i class="fas fa-clipboard-list" style="margin-right:8px; color:#b45309;"></i>
+                                    <span style="font-weight:500; font-size:0.7rem;">Quality Control:</span>
+                                    <div style="margin-top: 6px;">
+                                        <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+                                            <label style="display: flex; align-items: center; cursor: pointer; gap: 4px; font-size:0.5rem;">
+                                                <span>Face ID / Touch ID</span>
+                                                <input type="checkbox" style="width: 14px; height: 14px; cursor: pointer;">
+                                            </label>
+                                            <label style="display: flex; align-items: center; cursor: pointer; gap: 4px; font-size:0.5rem;">
+                                                <span>Battery Health</span>
+                                                <input type="checkbox" style="width: 14px; height: 14px; cursor: pointer;">
+                                            </label>
+                                            <label style="display: flex; align-items: center; cursor: pointer; gap: 4px; font-size:0.5rem;">
+                                                <span>Speaker A</span>
+                                                <input type="checkbox" style="width: 14px; height: 14px; cursor: pointer;">
+                                                <span>B</span>
+                                                <input type="checkbox" style="width: 14px; height: 14px; cursor: pointer;">
+                                            </label>
+                                            <label style="display: flex; align-items: center; cursor: pointer; gap: 4px; font-size:0.5rem;">
+                                                <span>Camera D</span>
+                                                <input type="checkbox" style="width: 14px; height: 14px; cursor: pointer;">
+                                                <span>B</span>
+                                                <input type="checkbox" style="width: 14px; height: 14px; cursor: pointer;">
+                                            </label>
+                                            <label style="display: flex; align-items: center; cursor: pointer; gap: 4px; font-size:0.5rem;">
+                                                <span>Taptic</span>
+                                                <input type="checkbox" style="width: 14px; height: 14px; cursor: pointer;">
+                                            </label>
+                                            <label style="display: flex; align-items: center; cursor: pointer; gap: 4px; font-size:0.5rem;">
+                                                <span>True Tone</span>
+                                                <input type="checkbox" style="width: 14px; height: 14px; cursor: pointer;">
+                                            </label>
+                                            <label style="display: flex; align-items: center; cursor: pointer; gap: 4px; font-size:0.5rem;">
+                                                <span>Audio</span>
+                                                <input type="checkbox" style="width: 14px; height: 14px; cursor: pointer;">
+                                            </label>
+                                            <label style="display: flex; align-items: center; cursor: pointer; gap: 4px; font-size:0.5rem;">
+                                                <span>LCD</span>
+                                                <input type="checkbox" style="width: 14px; height: 14px; cursor: pointer;">
+                                            </label>
+                                            <label style="display: flex; align-items: center; cursor: pointer; gap: 4px; font-size:0.5rem;">
+                                                <span>Charging</span>
+                                                <input type="checkbox" style="width: 14px; height: 14px; cursor: pointer;">
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="note-footer" style="font-size: 0.5rem;">
+                                    <i class="fas fa-pen" style="margin-right:8px; color:#b45309;"></i>
+                                    <span style="font-weight:500; font-size:0.5rem;">Terms and Conditions Service:</span> Unit datang dalam keadaan mati, kami tidak bisa menjamin kondisi dalam Handphone. Kerusakan baru setelah unit selesai pihak teknisi tidak tanggung jawab. Unit jika tidak ditebus dalam jangka waktu 1 bulan dianggap hilang.
+                                </div>
+
+                                <div class="note-footer" style="font-size: 0.5rem;">
+                                    <i class="fas fa-pen" style="margin-right:8px; color:#b45309;"></i>
+                                    <span style="font-weight:500; font-size:0.5rem;">Terms and Conditions Pembelian:</span> hp yang sudah di beli tidak bisa di kembalikan apabila tidak ada kendala, adapun garansi yang kami sediakan yaitu : Jasa service satu tahun | Garansi unit satu bulan | IMEI satu bulan
+                                </div>
+
+                                <div style="display: flex; justify-content: flex-end; margin-top: 75px;">
+                                        <div style="text-align: center; min-width: 150px;">
+                                            <hr style="margin: 0 0 4px 0; border: 0; border-top: 1px solid #999;">
+                                            <span style="font-size: 0.65rem; color: #555;">Authorized Sign</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                                                
+                                <hr>
+                                <div class="footer-thanks">
+                                    <div class="social-icons">
+                                        <div class="social-item">
+                                            <span class="bank-icon bca">BCA</span>
+                                            <span class="social-text">2780596271 Yogi Armandi</span>
+                                        </div>
+                                        
+                                        <div class="social-item">
+                                            <a class="social-icon whatsapp">
+                                                <i class="fab fa-whatsapp"></i>
+                                            </a>
+                                            <span class="social-text">081224355074</span>
+                                        </div>
+                                        <div class="social-item">
+                                            <a class="social-icon instagram">
+                                                <i class="fab fa-instagram"></i>
+                                            </a>
+                                            <span class="social-text">Armstore_17</span>
+                                        </div>
+                                        <div class="social-item">
+                                            <a class="social-icon tiktok">
+                                                <i class="fab fa-tiktok"></i>
+                                            </a>
+                                            <span class="social-text">@armstore177</span>
+                                        </div>
+                                    </div>
+                                    <div class="thanks-text">Terima kasih atas kepercayaan Anda.</div>
+                                </div>
+                               
+                            </div>
+                            `;
+
+                invoiceDiv.innerHTML = invoiceHTML;
+            }
+
+            // Render form items
+            function renderItemsForm() {
+                if (!itemsContainer) return;
+                itemsContainer.innerHTML = '';
+
+                if (itemsArray.length === 0) {
+                    itemsArray.push({ name: '', quantity: 0, price: 0, total: 0 });
+                }
+
+                itemsArray.forEach((item, idx) => {
+                    const rowDiv = document.createElement('div');
+                    rowDiv.className = 'item-row';
+
+                    const nameInput = document.createElement('input');
+                    nameInput.type = 'text';
+                    nameInput.placeholder = 'Nama item';
+                    nameInput.value = item.name;
+                    nameInput.className = 'item-name';
+                    nameInput.style.borderRadius = '40px';
+                    nameInput.style.padding = '8px 12px';
+                    nameInput.style.border = '1px solid #cbd5e1';
+
+                    const qtyInput = document.createElement('input');
+                    qtyInput.type = 'number';
+                    qtyInput.placeholder = 'Qty';
+                    qtyInput.value = item.quantity;
+                    qtyInput.className = 'item-qty';
+                    qtyInput.style.borderRadius = '40px';
+                    qtyInput.style.padding = '8px 12px';
+
+                    const priceInput = document.createElement('input');
+                    priceInput.type = 'number';
+                    priceInput.placeholder = 'Harga';
+                    priceInput.value = item.price;
+                    priceInput.className = 'item-price';
+                    priceInput.style.borderRadius = '40px';
+                    priceInput.style.padding = '8px 12px';
+
+                    const totalSpan = document.createElement('span');
+                    const computedTotal = (Number(qtyInput.value) || 0) * (Number(priceInput.value) || 0);
+                    totalSpan.innerText = formatRupiah(computedTotal);
+                    totalSpan.className = 'item-total-display';
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+                    removeBtn.className = 'remove-item';
+
+                    const updateItem = () => {
+                        const newName = nameInput.value;
+                        const newQty = parseInt(qtyInput.value) || 0;
+                        const newPrice = parseFloat(priceInput.value) || 0;
+                        const newTotal = newQty * newPrice;
+                        itemsArray[idx] = {
+                            name: newName,
+                            quantity: newQty,
+                            price: newPrice,
+                            total: newTotal,
+                        };
+                        totalSpan.innerText = formatRupiah(newTotal);
+                        renderInvoiceToPreview();
+                    };
+
+                    nameInput.addEventListener('input', updateItem);
+                    qtyInput.addEventListener('input', updateItem);
+                    priceInput.addEventListener('input', updateItem);
+
+                    removeBtn.addEventListener('click', () => {
+                        if (itemsArray.length > 1) {
+                            itemsArray.splice(idx, 1);
+                            renderItemsForm();
+                            renderInvoiceToPreview();
+                        } else {
+                            alert('Minimal harus ada satu item dalam invoice');
+                        }
+                    });
+
+                    rowDiv.appendChild(nameInput);
+                    rowDiv.appendChild(qtyInput);
+                    rowDiv.appendChild(priceInput);
+                    rowDiv.appendChild(totalSpan);
+                    rowDiv.appendChild(removeBtn);
+                    itemsContainer.appendChild(rowDiv);
+                });
+            }
+
+            // Konversi ke PDF
+            async function convertToPDF() {
+                const btn = document.getElementById('convertToPDFBtn');
+                const originalText = btn.innerHTML;
+
+                btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Memproses PDF...';
+                btn.disabled = true;
+
+                try {
+                    renderInvoiceToPreview();
+                    await new Promise((resolve) => setTimeout(resolve, 200));
+
+                    const invoiceElement = document.getElementById('invoiceForPDF');
+                    if (!invoiceElement) {
+                        throw new Error('Elemen invoice tidak ditemukan');
+                    }
+
+                    const canvas = await html2canvas(invoiceElement, {
+                        scale: 3,
+                        backgroundColor: '#ffffff',
+                        logging: false,
+                        useCORS: false,
+                        allowTaint: false,
+                    });
+
+                    const imgData = canvas.toDataURL('image/png');
+                    const { jsPDF } = window.jspdf;
+
+                    const pdf = new jsPDF({
+                        orientation: 'portrait',
+                        unit: 'mm',
+                        format: 'a4',
+                    });
+
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = pdf.internal.pageSize.getHeight();
+                    const imgWidth = pdfWidth;
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                    let position = 0;
+                    let heightLeft = imgHeight;
+
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+                    heightLeft -= pdfHeight;
+
+                    while (heightLeft > 0) {
+                        position = heightLeft - imgHeight;
+                        pdf.addPage();
+                        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+                        heightLeft -= pdfHeight;
+                    }
+
+                    const invoiceNumber = document.getElementById('invoiceNumber').value.replace(/[^a-z0-9]/gi, '_') || 'invoice';
+                    pdf.save(`Invoice_${invoiceNumber}.pdf`);
+
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan: ' + error.message);
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            }
+
+            // Event binding
+            function bindMainFormEvents() {
+                const fields = ['invoiceNumber', 'customerName', 'invoiceDate', 'invoiceNote'];
+                fields.forEach((id) => {
+                    const el = document.getElementById(id);
+                    if (el) el.addEventListener('input', () => renderInvoiceToPreview());
+                });
+            }
+
+            // Inisialisasi
+            function init() {
+                renderItemsForm();
+                bindMainFormEvents();
+                renderInvoiceToPreview();
+
+                if (addItemBtn) {
+                    addItemBtn.addEventListener('click', () => {
+                        itemsArray.push({ name: '', quantity: 0, price: 0, total: 0 });
+                        renderItemsForm();
+                        renderInvoiceToPreview();
+                    });
+                }
+
+                const pdfBtn = document.getElementById('convertToPDFBtn');
+                if (pdfBtn) pdfBtn.addEventListener('click', convertToPDF);
+            }
+
+            init();
+        </script>
+    </body>
+</html>
