@@ -77,7 +77,7 @@ h3 {
     font-size: 1.2rem;
     font-weight: 500;
     color: #1e293b;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .form-group {
@@ -294,7 +294,7 @@ textarea {
 .customer-info p,
 .invoice-detail p {
     margin: 6px 0;
-    font-size: 0.85rem;
+    font-size: 0.6rem;
 }
 .label {
     font-weight: 600;
@@ -305,7 +305,7 @@ textarea {
     width: 100%;
     border-collapse: collapse;
     margin: 0.75rem 0; /* diperkecil dari 1.5rem */
-    font-size: 0.7rem; /* diperkecil dari 0.85rem */
+    font-size: 0.5rem; /* diperkecil dari 0.85rem */
 }
 .invoice-table th {
     text-align: left;
@@ -333,7 +333,7 @@ textarea {
 }
 .total-row td {
     padding-top: 5px; /* diperkecil dari 14px */
-    font-size: 0.75rem; /* diperkecil dari 1rem */
+    font-size: 0.5rem; /* diperkecil dari 1rem */
 }
 .note-footer {
     margin-top: 0.5rem;
